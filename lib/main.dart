@@ -1,50 +1,56 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:wallet_app/ui/screen/sign_in.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:provider/provider.dart';
+import 'package:wallet_app/generated/l10n.dart'; // Import the generated localization file
+import 'package:wallet_app/provider/provider_language.dart';
+import 'package:wallet_app/ui/screen/home_page.dart';
+import 'package:wallet_app/ui/screen/welcome.dart';
 import 'package:wallet_app/util/constant.dart';
-import 'package:wallet_app/util/theme.dart';
 
-void main() {
+import 'firebase_options.dart';
+
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(const MyApp());
+
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  runApp(
+    ChangeNotifierProvider(
+      create: (_) => LanguageProvider(),
+      child: const MyApp(),
+    ),
+  );
 }
 
-ThemeManager _themeManager = ThemeManager();
-
-class MyApp extends StatefulWidget {
+class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
   @override
-  State<MyApp> createState() => _MyAppState();
-}
-
-class _MyAppState extends State<MyApp> {
-  @override
-  void initState() {
-    _themeManager.addListener(themeListener);
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    _themeManager.removeListener(themeListener);
-    super.dispose();
-  }
-
-  themeListener() {
-    if (mounted) {
-      setState(() {});
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Wallet App',
-      debugShowCheckedModeBanner: false,
-      theme: lightTheme,
-      darkTheme: darkTheme,
-      themeMode: ThemeMode.system,
-      home: const SignInPage(),
+    return  Consumer<LanguageProvider>(
+      builder: (context, languageProvider, child) {
+        return MaterialApp(
+          title: 'Flutter Wallet App',
+          debugShowCheckedModeBanner: false,
+          theme: lightTheme,
+          locale: languageProvider.locale,
+          supportedLocales: const [
+            Locale('en', ''), // English
+            Locale('ar', ''), // Arabic
+          ],
+          localizationsDelegates: const [
+            S.delegate, // Your generated localization delegate
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate, // Add this for Cupertino support
+          ],
+          darkTheme: darkTheme,
+          themeMode: ThemeMode.system,
+          home: const HomePage(),
+        );
+      },
     );
   }
 }

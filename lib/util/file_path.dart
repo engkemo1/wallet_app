@@ -1,4 +1,4 @@
-const String logo = 'assets/svg/logo.png';
+const String logo = 'assets/svg/logo.jpg';
 
 const String avatorOne = 'assets/svg/avator1.svg';
 const String avatorTwo = 'assets/svg/avator2.svg';

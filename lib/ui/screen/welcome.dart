@@ -103,7 +103,7 @@ class _SignInPageState extends State<SignInPage> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => const AuthPage(),
+                builder: (context) =>  AuthPage(register: false,),
               ),
             );
           },
@@ -120,7 +120,7 @@ class _SignInPageState extends State<SignInPage> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => const AuthPage(),
+                builder: (context) =>  AuthPage(register: true,),
               ),
             );
           },

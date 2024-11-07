@@ -1,0 +1,118 @@
+{
+  "project_info": {
+    "project_number": "281655354801",
+    "project_id": "salon-groom-app",
+    "storage_bucket": "salon-groom-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:281655354801:android:05d893a5444e873ff44990",
+        "android_client_info": {
+          "package_name": "com.example.salon"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "281655354801-cb8g3fs92lhs455roag4dqlktammbop6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDc_pFuWkXZiZDCW69r2UoFX-8tW-nbCNo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "281655354801-cb8g3fs92lhs455roag4dqlktammbop6.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "281655354801-1pgt0ovpl2ag7oqfc55fj8ipv220eqdg.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.salon"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:281655354801:android:9efa6ebae38dd375f44990",
+        "android_client_info": {
+          "package_name": "com.example.salon_owner"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "281655354801-cb8g3fs92lhs455roag4dqlktammbop6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDc_pFuWkXZiZDCW69r2UoFX-8tW-nbCNo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "281655354801-cb8g3fs92lhs455roag4dqlktammbop6.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "281655354801-1pgt0ovpl2ag7oqfc55fj8ipv220eqdg.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.salon"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:281655354801:android:ecdebd4137d44621f44990",
+        "android_client_info": {
+          "package_name": "com.example.wallet_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "281655354801-cb8g3fs92lhs455roag4dqlktammbop6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDc_pFuWkXZiZDCW69r2UoFX-8tW-nbCNo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "281655354801-cb8g3fs92lhs455roag4dqlktammbop6.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "281655354801-1pgt0ovpl2ag7oqfc55fj8ipv220eqdg.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.salon"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
