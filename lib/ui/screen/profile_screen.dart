@@ -144,8 +144,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
-                child: const Text(
-                  'Save Changes',
+                child:  Text(
+                  S.of(context).saveChanges    ,
                   style: TextStyle(fontSize: 16,color: Colors.white),
                 ),
               ),

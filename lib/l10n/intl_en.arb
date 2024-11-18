@@ -22,7 +22,7 @@
      "carCard": "Car Card",
      "bankAccounts": "Bank Accounts",
      "healthInformation": "Health Information",
-     "cheapness": "Cheapness",
+     "cheapness": "License",
      "emails": "Emails",
      "coupons": "Coupons"
           ,"showALL":"SHOW ALL",
@@ -54,7 +54,8 @@
             "addImage": "Add Image",
             "addToFirestore": "Data added to Firestore",
             "editProfile": "Edit profile",
-                                    "saveChanges":"Save Changes"
-
+                                    "saveChanges":"Save Changes","abouUs":"“Watheeq” application for managing personal information with a simple and easy-to-use interface, allows users to save their personal and banking data safely, with the ability to collect important data in one place for quick access, in addition to obtaining discount codes for shopping and exclusive offers. The app is designed to provide a seamless experience that helps organize daily life in a safe and efficient way. ",
+"team":"The app was created by students of the Technical College of Communications and Information to improve your daily experience."
+,"addNote": "Add Note"
 
 }

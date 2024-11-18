@@ -1,6 +1,10 @@
+import 'dart:io';
+
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:wallet_app/ui/screen/service/service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:wallet_app/generated/l10n.dart'; // Import localization file
@@ -18,6 +22,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   bool _isLoading = true;
   Map<String, dynamic>? userData;
+  final ImagePicker _picker = ImagePicker(); // Image picker instance
 
   @override
   void initState() {
@@ -30,7 +35,10 @@ class _HomePageState extends State<HomePage> {
     var userId = FirebaseAuth.instance.currentUser!.uid;
 
     try {
-      var document = await FirebaseFirestore.instance.collection('users').doc(userId).get();
+      var document = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .get();
       setState(() {
         userData = document.data();
         _isLoading = false;
@@ -44,7 +52,94 @@ class _HomePageState extends State<HomePage> {
       );
     }
   }
+  // Function to pick an image from the device
+  Future<void> _pickImageAndUpload() async {
+    final XFile? pickedFile = await _picker.pickImage(source: ImageSource.gallery);
 
+    if (pickedFile != null) {
+      File imageFile = File(pickedFile.path);
+
+      TextEditingController nameController = TextEditingController();
+
+      // Show dialog for user input
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('Enter Your Name'),
+            content: TextField(
+              controller: nameController,
+              decoration: const InputDecoration(hintText: 'Name'),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop(); // Close dialog
+                },
+                child: const Text('Cancel'),
+              ),
+              TextButton(
+                onPressed: () async {
+                  String userName = nameController.text.trim();
+                  Navigator.of(context).pop(); // Close dialog
+
+                  if (userName.isEmpty) {
+                    ScaffoldMessenger.of(this.context).showSnackBar(
+                      const SnackBar(content: Text('Name cannot be empty!')),
+                    );
+                    return;
+                  }
+
+                  try {
+                    String fileName = DateTime.now().millisecondsSinceEpoch.toString();
+
+                    // Upload to Firebase Storage
+                    UploadTask uploadTask = FirebaseStorage.instance
+                        .ref('userHealthCards/$fileName')
+                        .putFile(imageFile);
+                    TaskSnapshot snapshot = await uploadTask;
+                    String imageUrl = await snapshot.ref.getDownloadURL();
+
+                    // Save the image URL, userId, and name to Firestore
+                    await FirebaseFirestore.instance.collection("overview").add({
+                      "image": imageUrl,
+                      "name": userName,
+                      "userId": FirebaseAuth.instance.currentUser?.uid ?? 'unknown',
+                    });
+
+                    // Use global ScaffoldMessenger to avoid invalid context issues
+                    ScaffoldMessenger.of(this.context).showSnackBar(
+                      const SnackBar(content: Text('Image uploaded successfully!')),
+                    );
+                  } catch (e) {
+                    // Use global ScaffoldMessenger for error display
+                    ScaffoldMessenger.of(this.context).showSnackBar(
+                      SnackBar(content: Text('Error uploading image: $e')),
+                    );
+                  }
+                },
+                child: const Text('Submit'),
+              ),
+            ],
+          );
+        },
+      );
+    }
+  }
+
+  // Function to delete the image from Firebase Storage and Firestore
+  Future<void> _deleteImage(String docId, String imageUrl) async {
+    try {
+      // Delete from Firebase Storage
+      await FirebaseStorage.instance.refFromURL(imageUrl).delete();
+      // Delete from Firestore
+      await FirebaseFirestore.instance.collection("overview").doc(docId).delete();
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error deleting image: $e')),
+      );
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -52,45 +147,68 @@ class _HomePageState extends State<HomePage> {
         backgroundColor: Theme.of(context).colorScheme.background,
         body: _isLoading
             ? const Center(child: CircularProgressIndicator())
-            : Padding(
-          padding: const EdgeInsets.only(left: 18, right: 18, top: 34),
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                _contentHeader(),
-                const SizedBox(height: 30),
-                Text(
-                  S.of(context).accountOverview, // Localized string
-                  style: Theme.of(context).textTheme.headlineMedium,
-                ),
-                const SizedBox(height: 16),
-                SizedBox(
-                  height: 220,
-                  child: ListView(
-                    scrollDirection: Axis.horizontal,
-                    children: [
-                      _buildCardWidget(S.of(context).healthCard, userData?['healthCardUrl']),
-                      _buildCardWidget(S.of(context).carCard, userData?['carFormUrl']),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 30),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    Text(
-                      S.of(context).services, // Localized string
-                      style: Theme.of(context).textTheme.headlineMedium,
+            : StreamBuilder<Object>(
+            stream: FirebaseFirestore.instance.collection("overview").where("userId",isEqualTo:FirebaseAuth.instance.currentUser?.uid ).snapshots(),
+            builder: (context,AsyncSnapshot snapShot) {
+              if (!snapShot.hasData) {
+                return const Center(child: CircularProgressIndicator());
+              }
+              var data = snapShot.data!.docs;
+
+              return Padding(
+                    padding: const EdgeInsets.only(left: 18, right: 18, top: 34),
+                    child: SingleChildScrollView(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          _contentHeader(),
+                          const SizedBox(height: 30),
+                          Text(
+                            S.of(context).accountOverview, // Localized string
+                            style: Theme.of(context).textTheme.headlineMedium,
+                          ),
+                          const SizedBox(height: 16),
+                          SizedBox(
+                            height:snapShot==null? 100:220,
+                            child:ListView(
+                              scrollDirection: Axis.horizontal,
+                              children: [
+
+                                ...data.map((doc) => _buildCardWidget(
+                                  doc['name'],
+                                  doc['image'],
+                                  doc.id, // Pass document ID
+                                )),
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: InkWell(
+                                    onTap:_pickImageAndUpload,
+                                    child: Container(
+                                      decoration: const BoxDecoration(shape: BoxShape.circle),
+                                    child: const Center(child: Icon(Icons.add_circle_outline,size: 50,),),),
+                                  ),
+                                ),
+                              ]
+                            )  ),
+
+                          const SizedBox(height: 30),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: <Widget>[
+                              Text(
+                                S.of(context).services, // Localized string
+                                style: Theme.of(context).textTheme.headlineMedium,
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 16),
+                          _contentServices(context),
+                        ],
+                      ),
                     ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                _contentServices(context),
-              ],
+                  );
+              }
             ),
-          ),
-        ),
       ),
     );
   }
@@ -123,7 +241,8 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _buildCardWidget(String title, String? imageUrl) {
+
+  Widget _buildCardWidget(String title, String? imageUrl, String docId) {
     return SizedBox(
       width: 300,
       height: 200,
@@ -132,92 +251,241 @@ class _HomePageState extends State<HomePage> {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
         ),
-        child: Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16),
-            gradient: const LinearGradient(
-              colors: [Colors.blueAccent, Colors.black],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (imageUrl != null)
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => FullScreenImage(imageUrl: imageUrl),
+        child: Stack(
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16),
+                gradient: const LinearGradient(
+                  colors: [Colors.blueAccent, Colors.black],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (imageUrl != null)
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => FullScreenImage(imageUrl: imageUrl),
+                            ),
+                          );
+                        },
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(12),
+                          child: Image.network(
+                            imageUrl,
+                            width: double.infinity,
+                            height: 80,
+                            fit: BoxFit.cover,
+                          ),
                         ),
-                      );
-                    },
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(12),
-                      child: Image.network(
-                        imageUrl,
-                        width: double.infinity,
-                        height: 80,
-                        fit: BoxFit.cover,
+                      ),
+                    const SizedBox(height: 12),
+                    Text(
+                     title,
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
                       ),
                     ),
-                  ),
-                const SizedBox(height: 12),
-                Text(
-                  userData?["username"] ?? 'Username',
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Row(
-                  children: [
-                    Icon(Icons.perm_identity, color: Colors.white70, size: 16),
-                    const SizedBox(width: 8),
-                    Text(
-                      'ID: ${userData?['id'] ?? 'N/A'}',
-                      style: TextStyle(color: Colors.white70, fontSize: 14),
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        Icon(Icons.perm_identity, color: Colors.white70, size: 16),
+                        const SizedBox(width: 8),
+                        Text(
+                          'ID: ${userData?['id'] ?? 'N/A'}',
+                          style: TextStyle(color: Colors.white70, fontSize: 14),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        Icon(Icons.calendar_today, color: Colors.white70, size: 16),
+                        const SizedBox(width: 8),
+                        Text(
+                          'Created: ${_formatTimestamp(userData?['createdAt'])}',
+                          style: TextStyle(color: Colors.white70, fontSize: 14),
+                        ),
+                      ],
                     ),
                   ],
                 ),
-                const SizedBox(height: 8),
-                Row(
-                  children: [
-                    Icon(Icons.calendar_today, color: Colors.white70, size: 16),
-                    const SizedBox(width: 8),
-                    Text(
-                      'Created: ${_formatTimestamp(userData?['createdAt'])}',
-                      style: TextStyle(color: Colors.white70, fontSize: 14),
-                    ),
-                  ],
-                ),
-              ],
+              ),
             ),
-          ),
+            Positioned(
+              right: 8,
+              top: 8,
+              child: IconButton(
+                icon: Icon(Icons.delete, color: Colors.redAccent),
+                onPressed: () {
+                  _deleteImage(docId, imageUrl!);
+                },
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
-
   String _formatTimestamp(Timestamp? timestamp) {
     if (timestamp == null) return 'N/A';
     DateTime date = timestamp.toDate();
     return '${date.day}/${date.month}/${date.year}';
   }
+  void _showAddNoteDialog() {
+    TextEditingController noteController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Add a Note'),
+          content: TextField(
+            controller: noteController,
+            maxLines: 5,
+            decoration: const InputDecoration(
+              hintText: 'Enter your note here...',
+              border: OutlineInputBorder(),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () async {
+                String noteText = noteController.text.trim();
+                Navigator.of(context).pop();
+
+                if (noteText.isEmpty) {
+                  ScaffoldMessenger.of(this.context).showSnackBar(
+                    const SnackBar(content: Text('Note cannot be empty!')),
+                  );
+                  return;
+                }
+
+                try {
+                  await FirebaseFirestore.instance.collection('notes').add({
+                    'userId': FirebaseAuth.instance.currentUser?.uid ?? 'unknown',
+                    'note': noteText,
+                    'timestamp': FieldValue.serverTimestamp(),
+                  });
+
+                  ScaffoldMessenger.of(this.context).showSnackBar(
+                    const SnackBar(content: Text('Note added successfully!')),
+                  );
+                } catch (e) {
+                  ScaffoldMessenger.of(this.context).showSnackBar(
+                    SnackBar(content: Text('Error adding note: $e')),
+                  );
+                }
+              },
+              child: const Text('Add Note'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+ showAddNoteDialog() {
+    TextEditingController noteController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Add a Note'),
+          content: TextField(
+            controller: noteController,
+            maxLines: 5,
+            decoration: const InputDecoration(
+              hintText: 'Enter your note here...',
+              border: OutlineInputBorder(),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () async {
+                String noteText = noteController.text.trim();
+                Navigator.of(context).pop();
+
+                if (noteText.isEmpty) {
+                  ScaffoldMessenger.of(this.context).showSnackBar(
+                    const SnackBar(content: Text('Note cannot be empty!')),
+                  );
+                  return;
+                }
+
+                try {
+                  await FirebaseFirestore.instance.collection('notes').add({
+                    'userId': FirebaseAuth.instance.currentUser?.uid ?? 'unknown',
+                    'note': noteText,
+                    'timestamp': FieldValue.serverTimestamp(),
+                  });
+
+                  ScaffoldMessenger.of(this.context).showSnackBar(
+                    const SnackBar(content: Text('Note added successfully!')),
+                  );
+                } catch (e) {
+                  ScaffoldMessenger.of(this.context).showSnackBar(
+                    SnackBar(content: Text('Error adding note: $e')),
+                  );
+                }
+              },
+              child: const Text('Add Note'),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   Widget _contentServices(BuildContext context) {
     List<ModelServices> listServices = [
-      ModelServices(collectionName:"Bank Accounts",title: S.of(context).bankAccounts, img: "assets/bank (1).png", id: 1), // Localized
-      ModelServices(collectionName : "Health Information", title: S.of(context).healthInformation, img: "assets/consent (1).png", id: 2), // Localized
-      ModelServices(collectionName: "Cheapness",title: S.of(context).cheapness, img: "assets/loss.png", id: 3), // Localized
-      ModelServices(collectionName:"Emails",title: S.of(context).emails, img: "assets/email.png", id: 4), // Localized
-      ModelServices(collectionName:"Coupons", title: S.of(context).coupons, img: "assets/coupon.png", id: 5), // Localized
+      ModelServices(
+          collectionName: "Bank Accounts",
+          title: S.of(context).bankAccounts,
+          img: "assets/bank (1).png",
+          id: 1),
+      ModelServices(
+          collectionName: "Health Information",
+          title: S.of(context).healthInformation,
+          img: "assets/consent (1).png",
+          id: 2),
+      ModelServices(
+          collectionName: "Cheapness",
+          title: S.of(context).cheapness,
+          img: "assets/svg/drivers-license.png",
+          id: 3),
+      ModelServices(
+          collectionName: "Emails",
+          title: S.of(context).emails,
+          img: "assets/email.png",
+          id: 4),
+      ModelServices(
+          collectionName: "Coupons",
+          title: S.of(context).coupons,
+          img: "assets/coupon.png",
+          id: 5),
     ];
 
     return SizedBox(
@@ -227,16 +495,51 @@ class _HomePageState extends State<HomePage> {
         crossAxisCount: 4,
         childAspectRatio: MediaQuery.of(context).size.width /
             (MediaQuery.of(context).size.height / 1.5),
-        children: listServices.map((value) {
-          return GestureDetector(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => Service(collectionName:value.collectionName ,name: value.title, logo: value.img, id: value.id),
-                ),
-              );
-            },
+        children: [
+          ...listServices.map((value) {
+            return GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => Service(
+                        collectionName: value.collectionName,
+                        name: value.title,
+                        logo: value.img,
+                        id: value.id),
+                  ),
+                );
+              },
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  Container(
+                    width: 50,
+                    height: 50,
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8),
+                      color: Theme.of(context).cardColor,
+                    ),
+                    child: Image.asset(
+                      value.img,
+                      color: Theme.of(context).iconTheme.color,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    value.title,
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.bodyLarge,
+                  ),
+                  const SizedBox(height: 14),
+                ],
+              ),
+            );
+          }).toList(),
+          // Add Note Button
+          GestureDetector(
+            onTap: () => showAddNoteDialog(),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
@@ -248,22 +551,19 @@ class _HomePageState extends State<HomePage> {
                     borderRadius: BorderRadius.circular(8),
                     color: Theme.of(context).cardColor,
                   ),
-                  child: Image.asset(
-                    value.img,
-                    color: Theme.of(context).iconTheme.color,
-                  ),
+                  child: const Icon(Icons.note_add, size: 32),
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  value.title,
+                  S.of(context).addNote,
                   textAlign: TextAlign.center,
                   style: Theme.of(context).textTheme.bodyLarge,
                 ),
                 const SizedBox(height: 14),
               ],
             ),
-          );
-        }).toList(),
+          ),
+        ],
       ),
     );
   }
@@ -273,7 +573,12 @@ class ModelServices {
   String title, img;
   int id;
   String collectionName;
-  ModelServices({required this.title, required this.collectionName,required this.img, required this.id});
+
+  ModelServices(
+      {required this.title,
+      required this.collectionName,
+      required this.img,
+      required this.id});
 }
 
 class FullScreenImage extends StatelessWidget {
@@ -299,4 +604,5 @@ class FullScreenImage extends StatelessWidget {
       ),
     );
   }
+
 }

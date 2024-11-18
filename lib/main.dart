@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -29,6 +30,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var user =FirebaseAuth.instance.currentUser?.uid;
     return  Consumer<LanguageProvider>(
       builder: (context, languageProvider, child) {
         return MaterialApp(
@@ -48,7 +50,7 @@ class MyApp extends StatelessWidget {
           ],
           darkTheme: darkTheme,
           themeMode: ThemeMode.system,
-          home: const HomePage(),
+          home: user ==null ? const SignInPage() : const HomePage(),
         );
       },
     );
