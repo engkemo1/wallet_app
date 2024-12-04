@@ -136,8 +136,22 @@ class _DrawerPageState extends State<DrawerPage> with TickerProviderStateMixin {
                     ),
                   ),
                   InkWell(
-                    onTap: () {
-                      Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => AuthPage(register: false)));
+                    onTap: () async{
+                      try {
+                        // Sign out the user
+                        await FirebaseAuth.instance.signOut();
+
+                        // Navigate to the AuthPage or Login Page
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(builder: (_) => AuthPage(register: false)),
+                        );
+                      } catch (e) {
+                        // Handle any errors during sign out
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Error during logout: $e')),
+                        );
+                      }
                     },
                     child: Container(
                       padding: const EdgeInsets.all(20),

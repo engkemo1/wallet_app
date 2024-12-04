@@ -3,18 +3,18 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:wallet_app/util/constant.dart';
 
-class WalletDetailsScreen extends StatefulWidget {
+class AddWallet extends StatefulWidget {
   final String collectionName;
   final String title;
   final String id;
 
-  WalletDetailsScreen({required this.collectionName, required this.id, required this.title});
+  AddWallet({required this.collectionName, required this.id, required this.title});
 
   @override
-  _WalletDetailsScreenState createState() => _WalletDetailsScreenState();
+  _AddWalletState createState() => _AddWalletState();
 }
 
-class _WalletDetailsScreenState extends State<WalletDetailsScreen> {
+class _AddWalletState extends State<AddWallet> {
   bool _isLoading = true;
   List<Map<String, dynamic>> _walletDataList = [];
 

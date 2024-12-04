@@ -3,6 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 import 'package:wallet_app/ui/screen/auth_page.dart';
 
+import '../../generated/l10n.dart';
 import '../../util/file_path.dart';
 import 'drawer_page.dart';
 
@@ -81,7 +82,7 @@ class _SignInPageState extends State<SignInPage> {
             height: 18,
           ),
           Text(
-            'Open An Account For Digital Smart Wallet Solutions.\nInstant Payouts. \n\nJoin For Free.',
+            S.of(context).team,
             style: Theme.of(context).textTheme.bodyLarge!.copyWith(fontSize: 15),
           )
         ],

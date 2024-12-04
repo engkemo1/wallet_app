@@ -24,7 +24,7 @@ class AboutUsPage extends StatelessWidget {
 
               const SizedBox(height: 20),
               Text(
-                S.of(context).about_us_description, // Localized description
+                S.of(context).team, // Localized description
                 style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                   color: Colors.grey[700],
                   fontSize: 16,
@@ -49,17 +49,10 @@ class AboutUsPage extends StatelessWidget {
                 fit: BoxFit.cover,
               ),
               const SizedBox(height: 20),
-              Text(
-                "",
-                // S.of(context).team, // Localized title
-                style: Theme.of(context).textTheme.headlineSmall!.copyWith(
-                  color: COLOR_PRIMARY,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
+
               const SizedBox(height: 10),
               Text(
-                ",",
+                S.of(context).abouUs,
                 // S.of(context).abouUs, // Localized description
                 style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                   color: Colors.grey[700],

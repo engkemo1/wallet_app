@@ -34,7 +34,7 @@ class MyApp extends StatelessWidget {
     return  Consumer<LanguageProvider>(
       builder: (context, languageProvider, child) {
         return MaterialApp(
-          title: 'Flutter Wallet App',
+          title: 'Watheeq',
           debugShowCheckedModeBanner: false,
           theme: lightTheme,
           locale: languageProvider.locale,

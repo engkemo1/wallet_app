@@ -200,10 +200,10 @@ class S {
     );
   }
 
-  /// `Account Overview`
+  /// `My cards`
   String get accountOverview {
     return Intl.message(
-      'Account Overview',
+      'My cards',
       name: 'accountOverview',
       desc: '',
       args: [],
@@ -260,10 +260,10 @@ class S {
     );
   }
 
-  /// `Cheapness`
+  /// `License`
   String get cheapness {
     return Intl.message(
-      'Cheapness',
+      'License',
       name: 'cheapness',
       desc: '',
       args: [],
@@ -585,6 +585,36 @@ class S {
     return Intl.message(
       'Save Changes',
       name: 'saveChanges',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `“Watheeq” application for managing personal information with a simple and easy-to-use interface, allows users to save their personal and banking data safely, with the ability to collect important data in one place for quick access, in addition to obtaining discount codes for shopping and exclusive offers. The app is designed to provide a seamless experience that helps organize daily life in a safe and efficient way. `
+  String get abouUs {
+    return Intl.message(
+      '“Watheeq” application for managing personal information with a simple and easy-to-use interface, allows users to save their personal and banking data safely, with the ability to collect important data in one place for quick access, in addition to obtaining discount codes for shopping and exclusive offers. The app is designed to provide a seamless experience that helps organize daily life in a safe and efficient way. ',
+      name: 'abouUs',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `The app was created by students of the Technical College of Communications and Information to improve your daily experience.`
+  String get team {
+    return Intl.message(
+      'The app was created by students of the Technical College of Communications and Information to improve your daily experience.',
+      name: 'team',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Add Note`
+  String get addNote {
+    return Intl.message(
+      'Add Note',
+      name: 'addNote',
       desc: '',
       args: [],
     );

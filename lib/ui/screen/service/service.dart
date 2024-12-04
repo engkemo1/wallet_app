@@ -40,8 +40,10 @@ class Service extends StatelessWidget {
                   onPressed: () {
                     Navigator.pop(context);
                   },
+
                   icon: const Icon(Icons.arrow_back, color: Colors.black),
                 ),
+
               ],
             ),
             // Logo
@@ -93,7 +95,7 @@ class Service extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (_) => WalletDetailsScreen(
+                      builder: (_) => AddWallet(
                         collectionName: collectionName,
                         title: name,
                         id: id.toString(),

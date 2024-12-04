@@ -22,15 +22,17 @@ class MessageLookup extends MessageLookupByLibrary {
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
+        "abouUs": MessageLookupByLibrary.simpleMessage(
+            "تطبيق \"وثيق\" لإدارة المعلومات الشخصية بواجهة بسيطة وسهلة الاستخدام، يتيح للمستخدمين حفظ بياناتهم الشخصية والمصرفية بأمان، مع إمكانية تجميع البيانات المهمة في مكان واحد للوصول السريع، بالإضافة إلى الحصول على أكواد خصم للتسوق وعروض حصرية. التطبيق مصمم لتوفير تجربة سلسة تساعد على تنظيم الحياة اليومية بطريقة آمنة وفعّالة."),
         "about": MessageLookupByLibrary.simpleMessage("معلومات عنا"),
         "about_us_description": MessageLookupByLibrary.simpleMessage(
             "نحن فريق مكرس لتقديم أفضل الخدمات المالية. مهمتنا هي تقديم حلول مبتكرة لإدارة أموالك بشكل أكثر فعالية ، مما يضمن الأمان وسهولة الاستخدام."),
         "about_us_title": MessageLookupByLibrary.simpleMessage("معلومات عنا"),
         "accountNumber": MessageLookupByLibrary.simpleMessage("رقم الحساب"),
-        "accountOverview":
-            MessageLookupByLibrary.simpleMessage("نظرة عامة على الحساب"),
+        "accountOverview": MessageLookupByLibrary.simpleMessage("بطاقاتي"),
         "add": MessageLookupByLibrary.simpleMessage("أضف"),
         "addImage": MessageLookupByLibrary.simpleMessage("أضف صورة"),
+        "addNote": MessageLookupByLibrary.simpleMessage("اضافة ملاحظات"),
         "addToFirestore": MessageLookupByLibrary.simpleMessage(
             "تمت إضافة البيانات إلى Firestore"),
         "age": MessageLookupByLibrary.simpleMessage("العمر"),
@@ -40,7 +42,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "call_us": MessageLookupByLibrary.simpleMessage("اتصل بنا"),
         "carCard": MessageLookupByLibrary.simpleMessage("بطاقة السيارة"),
         "cheapness": MessageLookupByLibrary.simpleMessage("رخص"),
-        "coupons": MessageLookupByLibrary.simpleMessage("الكوابات"),
+        "coupons": MessageLookupByLibrary.simpleMessage("الكوبونات"),
         "discountCode": MessageLookupByLibrary.simpleMessage("رمز الخصم"),
         "editProfile": MessageLookupByLibrary.simpleMessage("تعديل الحساب"),
         "email": MessageLookupByLibrary.simpleMessage("البريد الإلكتروني"),
@@ -85,6 +87,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "showALL": MessageLookupByLibrary.simpleMessage("محفوظاتي"),
         "submit": MessageLookupByLibrary.simpleMessage("أضف"),
         "switch_language": MessageLookupByLibrary.simpleMessage("تبديل اللغة"),
+        "team": MessageLookupByLibrary.simpleMessage(
+            "تم إنشاء التطبيق بواسطة طلاب كلية التقنية للاتصالات والمعلومات لتحسين تجربتك اليومية"),
         "visit_website": MessageLookupByLibrary.simpleMessage("زيارة الموقع"),
         "weight": MessageLookupByLibrary.simpleMessage("الوزن")
       };

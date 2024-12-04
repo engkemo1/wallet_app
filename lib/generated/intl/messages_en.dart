@@ -22,15 +22,17 @@ class MessageLookup extends MessageLookupByLibrary {
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
+        "abouUs": MessageLookupByLibrary.simpleMessage(
+            "“Watheeq” application for managing personal information with a simple and easy-to-use interface, allows users to save their personal and banking data safely, with the ability to collect important data in one place for quick access, in addition to obtaining discount codes for shopping and exclusive offers. The app is designed to provide a seamless experience that helps organize daily life in a safe and efficient way. "),
         "about": MessageLookupByLibrary.simpleMessage("About"),
         "about_us_description": MessageLookupByLibrary.simpleMessage(
             "We are a dedicated team committed to providing the best financial services. Our mission is to bring innovative solutions to manage your finances more effectively, ensuring security and ease of use."),
         "about_us_title": MessageLookupByLibrary.simpleMessage("About Us"),
         "accountNumber": MessageLookupByLibrary.simpleMessage("Account Number"),
-        "accountOverview":
-            MessageLookupByLibrary.simpleMessage("Account Overview"),
+        "accountOverview": MessageLookupByLibrary.simpleMessage("My cards"),
         "add": MessageLookupByLibrary.simpleMessage("Add"),
         "addImage": MessageLookupByLibrary.simpleMessage("Add Image"),
+        "addNote": MessageLookupByLibrary.simpleMessage("Add Note"),
         "addToFirestore":
             MessageLookupByLibrary.simpleMessage("Data added to Firestore"),
         "age": MessageLookupByLibrary.simpleMessage("Age"),
@@ -38,7 +40,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "bankName": MessageLookupByLibrary.simpleMessage("Bank Name"),
         "call_us": MessageLookupByLibrary.simpleMessage("Call Us"),
         "carCard": MessageLookupByLibrary.simpleMessage("Car Card"),
-        "cheapness": MessageLookupByLibrary.simpleMessage("Cheapness"),
+        "cheapness": MessageLookupByLibrary.simpleMessage("License"),
         "coupons": MessageLookupByLibrary.simpleMessage("Coupons"),
         "discountCode": MessageLookupByLibrary.simpleMessage("Discount Code"),
         "editProfile": MessageLookupByLibrary.simpleMessage("Edit profile"),
@@ -89,6 +91,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "submit": MessageLookupByLibrary.simpleMessage("ADD"),
         "switch_language":
             MessageLookupByLibrary.simpleMessage("Switch Language"),
+        "team": MessageLookupByLibrary.simpleMessage(
+            "The app was created by students of the Technical College of Communications and Information to improve your daily experience."),
         "visit_website": MessageLookupByLibrary.simpleMessage("Visit Website"),
         "weight": MessageLookupByLibrary.simpleMessage("Weight")
       };
